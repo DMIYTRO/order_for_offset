@@ -1,16 +1,79 @@
-# This is a sample Python script.
+import datetime
+import locale
+import time
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
+import psutil
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+for proc in psutil.process_iter(['name']):
+    if proc.info['name'] == 'chromedriver.exe':
+        proc.kill()
+for proc in psutil.process_iter(['name']):
+    if proc.info['name'] == 'chromedriver.exe':
+        proc.kill()
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+login_admin = "admin"
+password = ""
+login_user = "1kuperster"
+
+open_window_brauser = True
+# download_path = "rC:/Users/Dmitry/Downloads/сборки_xls"
+my_time = "10.09, Чт"
+local_day = locale.setlocale(locale.LC_TIME, "ru_RU")
+now = datetime.datetime.today().strftime("%d.%m, %a")
+same_date = now.title()
+print(same_date)
+# driver = webdriver.Chrome(options=chrome_options)
+test_time = "01:55"
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+def configure_browser(download_path):
+    options = Options()
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument("--disable-extensions")
+    options.add_argument("--proxy-server='direct://'")
+    options.add_argument("--proxy-bypass-list=*")
+    options.add_argument("--start-maximized")
+    options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--ignore-certificate-errors')
+    options.headless = open_window_brauser  # скрыть окно браузера
+    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko)"
+                         " Chrome/92.0.4515.107 Safari/537.36")
+    options.add_experimental_option("prefs", {
+        "download.default_directory": download_path,
+        "download.prompt_for_download": False,
+        "download.directory_upgrade": True,
+        "safebrowsing.enabled": True
+    })
+    driver = webdriver.Chrome(options=options, executable_path=r'C:\Users\Dmitry\PycharmProjects\pythonProject\chromedriver.exe')
+    # Set the download directory preferenc
+    return driver, options
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+download_path = r"C:\Users\Dmitry\Downloads\сборки_xls"
+
+
+def new():
+    driver, options = configure_browser(download_path)
+    url = "https://admin:R5PD0+}Qzqr@@www.sborka.ua/adm/sborki.php?type=digital"
+    driver.get(url)
+    assert "Сборка. Панель работника" in driver.title
+    driver.find_element_by_name('pass_worker').send_keys(login_user)
+    time.sleep(1)
+    driver.find_element_by_name('button').click()
+    print('1')
+    time.sleep(1)
+    driver.find_element_by_xpath("//a[@href='sborki.php']").click()
+    time.sleep(1)
+    driver.find_element_by_xpath("//a[@href='?type=ofset']").click()
+    time.sleep(1)
